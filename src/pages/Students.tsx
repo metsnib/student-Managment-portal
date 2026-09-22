@@ -35,7 +35,7 @@ export default function Students() {
   const [programFilter, setProgramFilter] = useState("all");
   const [addOpen, setAddOpen] = useState(false);
 
-  const list: Student[] = students ?? [];
+  const list: Student[] = useMemo(() => students ?? [], [students]);
 
   const programs = useMemo(
     () => Array.from(new Set(list.map((s) => s.program))).sort(),

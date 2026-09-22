@@ -81,7 +81,7 @@ export default function Dashboard() {
   const [addOpen, setAddOpen] = useState(false);
   const [query, setQuery] = useState("");
 
-  const list: Student[] = students ?? [];
+  const list: Student[] = useMemo(() => students ?? [], [students]);
 
   const recent = useMemo(
     () =>
