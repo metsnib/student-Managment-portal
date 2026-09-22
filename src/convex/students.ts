@@ -19,6 +19,20 @@ export const list = query({
   },
 });
 
+/**
+ * Fetch a single student by id. Returns null when the id is unknown or the
+ * caller is signed out. Requires sign-in.
+ */
+export const getById = query({
+  args: { id: v.id("students") },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (userId === null) return null;
+
+    return (await ctx.db.get(args.id)) ?? null;
+  },
+});
+
 /** Total student count for the dashboard stat card. Requires sign-in. */
 export const count = query({
   args: {},

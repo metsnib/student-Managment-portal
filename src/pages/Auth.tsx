@@ -14,7 +14,13 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { useAuth } from "@/hooks/use-auth";
-import { GraduationCap, Loader2, Mail, ShieldCheck } from "lucide-react";
+import {
+  GraduationCap,
+  Loader2,
+  Mail,
+  ShieldCheck,
+  UserPlus,
+} from "lucide-react";
 import { Suspense, useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 
@@ -40,7 +46,8 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
     searchParams.get("returnTo"),
     redirectAfterAuth,
   );
-  const [step, setStep] = useState<"signIn" | { email: string }>("signIn");
+  const mode = searchParams.get("mode") === "signup" ? "signup" : "signin";
+  const [step, setStep] = useState<"email" | { email: string }>("email");
   const [otp, setOtp] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -89,9 +96,12 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
 
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-4">
-      <div className="grid-pattern pointer-events-none absolute inset-0" aria-hidden />
       <div
-        className="pointer-events-none absolute -top-40 left-1/2 h-96 w-144 -translate-x-1/2 rounded-full bg-primary/10 blur-3xl"
+        className="grid-pattern pointer-events-none absolute inset-0"
+        aria-hidden
+      />
+      <div
+        className="pointer-events-none absolute -top-40 left-1/2 h-96 w-144 -translate-x-1/2 rounded-full bg-primary/15 blur-3xl"
         aria-hidden
       />
 
@@ -101,19 +111,25 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
           onClick={() => navigate("/")}
           className="mb-6 flex cursor-pointer items-center gap-2.5"
         >
-          <span className="flex size-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-soft">
+          <span className="flex size-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-glow">
             <GraduationCap className="size-5" />
           </span>
-          <span className="text-lg font-semibold tracking-tight">Rostera</span>
+          <span className="font-display text-lg font-semibold tracking-tight">
+            Student Management System
+          </span>
         </button>
 
-        <Card className="w-full border-border/70 shadow-lift">
-          {step === "signIn" ? (
+        <Card className="w-full border-border/70 bg-card/90 shadow-lift backdrop-blur">
+          {step === "email" ? (
             <>
               <CardHeader className="text-center">
-                <CardTitle className="text-xl">Admin sign in</CardTitle>
+                <CardTitle className="font-display text-xl">
+                  {mode === "signup" ? "Create your account" : "Sign in"}
+                </CardTitle>
                 <CardDescription>
-                  Enter your admin email to receive a verification code
+                  {mode === "signup"
+                    ? "Enter your email to set up your institution's workspace. We'll send a one-time code to verify it."
+                    : "Enter your email and we'll send a one-time code to sign you in."}
                 </CardDescription>
               </CardHeader>
               <form onSubmit={handleEmailSubmit}>
@@ -123,7 +139,7 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                       <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                       <Input
                         name="email"
-                        placeholder="admin@school.edu"
+                        placeholder={mode === "signup" ? "you@school.edu" : "name@school.edu"}
                         type="email"
                         className="pl-9"
                         autoComplete="email"
@@ -131,11 +147,7 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                         required
                       />
                     </div>
-                    <Button
-                      type="submit"
-                      disabled={isLoading}
-                      className="rounded-lg px-4"
-                    >
+                    <Button type="submit" disabled={isLoading} className="rounded-lg px-4">
                       {isLoading ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
                       ) : (
@@ -143,9 +155,7 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                       )}
                     </Button>
                   </div>
-                  {error && (
-                    <p className="mt-2 text-sm text-red-500">{error}</p>
-                  )}
+                  {error && <p className="mt-2 text-sm text-destructive">{error}</p>}
                 </CardContent>
               </form>
             </>
@@ -157,7 +167,7 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                 </div>
                 <CardTitle>Check your email</CardTitle>
                 <CardDescription>
-                  We&apos;ve sent a 6-digit code to {step.email}
+                  We sent a 6-digit code to {step.email}
                 </CardDescription>
               </CardHeader>
               <form onSubmit={handleOtpSubmit}>
@@ -172,11 +182,7 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                       maxLength={6}
                       disabled={isLoading}
                       onKeyDown={(e) => {
-                        if (
-                          e.key === "Enter" &&
-                          otp.length === 6 &&
-                          !isLoading
-                        ) {
+                        if (e.key === "Enter" && otp.length === 6 && !isLoading) {
                           const form = (e.target as HTMLElement).closest("form");
                           if (form) {
                             form.requestSubmit();
@@ -192,16 +198,16 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                     </InputOTP>
                   </div>
                   {error && (
-                    <p className="mt-2 text-center text-sm text-red-500">
+                    <p className="mt-2 text-center text-sm text-destructive">
                       {error}
                     </p>
                   )}
                   <p className="mt-4 text-center text-sm text-muted-foreground">
-                    Didn&apos;t receive a code?{" "}
+                    Didn't receive a code?{" "}
                     <Button
                       variant="link"
                       className="h-auto p-0"
-                      onClick={() => setStep("signIn")}
+                      onClick={() => setStep("email")}
                     >
                       Try again
                     </Button>
@@ -225,19 +231,42 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                   <Button
                     type="button"
                     variant="ghost"
-                    onClick={() => setStep("signIn")}
+                    onClick={() => setStep("email")}
                     disabled={isLoading}
                     className="w-full"
                   >
-                    Use different email
+                    Use a different email
                   </Button>
                 </CardFooter>
               </form>
             </>
           )}
 
-          <div className="rounded-b-lg border-t bg-secondary/60 px-6 py-4 text-center text-xs text-muted-foreground">
-            Version 1 is limited to a single administrator account
+          <div className="rounded-b-lg border-t bg-secondary/50 px-6 py-4 text-center text-xs text-muted-foreground">
+            {mode === "signup" ? (
+              <>
+                Already have an account?{" "}
+                <button
+                  type="button"
+                  className="font-medium text-primary underline-offset-4 hover:underline"
+                  onClick={() => navigate("/auth")}
+                >
+                  Sign in
+                </button>
+              </>
+            ) : (
+              <>
+                New here?{" "}
+                <button
+                  type="button"
+                  className="font-medium text-primary underline-offset-4 hover:underline"
+                  onClick={() => navigate("/auth?mode=signup")}
+                >
+                  Create an account
+                  <UserPlus className="ml-1 inline size-3" />
+                </button>
+              </>
+            )}
           </div>
         </Card>
       </div>

@@ -1,21 +1,22 @@
 import { motion } from "framer-motion";
 import {
   ArrowRight,
-  BadgeCheck,
-  CalendarCheck,
+  CalendarRange,
   ChartColumn,
+  CreditCard,
+  Database,
   GraduationCap,
   Lock,
-  ShieldCheck,
-  UserPlus,
+  MessageSquare,
+  Terminal,
   Users,
 } from "lucide-react";
-import logo from "@/assets/logo.svg";
+import { Link } from "react-router";
+
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/use-auth";
-import { Link } from "react-router";
 
 const fadeIn = (delay = 0) => ({
   initial: { opacity: 0, y: 24 },
@@ -23,31 +24,112 @@ const fadeIn = (delay = 0) => ({
   transition: { duration: 0.55, delay, ease: "easeOut" as const },
 });
 
-const features = [
+const modules = [
   {
-    icon: UserPlus,
-    title: "Instant registration",
-    body: "Add a student in seconds with name, email, program and year — validated server-side before it ever lands in the roster.",
+    icon: Database,
+    title: "Student records",
+    body: "One searchable registry for every student — contact details, program, and enrollment history, deduplicated by email at the database level.",
   },
   {
-    icon: Users,
-    title: "Living roster",
-    body: "Every student in one calm, searchable table. Find anyone by name, program or email without leaving the keyboard.",
+    icon: CalendarRange,
+    title: "Attendance",
+    body: "Take attendance per class session and watch patterns surface over time, so chronic absence gets caught early instead of at term's end.",
   },
   {
-    icon: BadgeCheck,
-    title: "Clean records",
-    body: "Duplicate emails are rejected at the door, so your roster stays trustworthy from the very first entry.",
+    icon: ChartColumn,
+    title: "Grades",
+    body: "Record assessments against your own grading scale and compute per-student and per-course aggregates automatically.",
+  },
+  {
+    icon: CreditCard,
+    title: "Fees",
+    body: "Track what each student owes, what has been paid, and what is overdue — with a clean ledger behind every balance.",
+  },
+  {
+    icon: Terminal,
+    title: "Timetables",
+    body: "Schedule classes and rooms once, then publish live timetables to teachers and students without spreadsheet churn.",
+  },
+  {
+    icon: MessageSquare,
+    title: "Communication",
+    body: "Announcements and direct threads connect teachers, students, and parents in one place — no more lost email chains.",
   },
 ];
 
-const upcoming = [
-  { icon: CalendarCheck, label: "Attendance tracking" },
-  { icon: ChartColumn, label: "Grades & transcripts" },
+const steps = [
+  {
+    label: "01",
+    title: "Create an account",
+    body: "Sign up with your email and verify with a one-time code. No credit card, no sales call.",
+  },
+  {
+    label: "02",
+    title: "Register your students",
+    body: "Add students individually or browse the catalog — every record is searchable the moment it is saved.",
+  },
+  {
+    label: "03",
+    title: "Invite your people",
+    body: "Each teacher, student, and parent signs in to their own dashboard with exactly the data they should see.",
+  },
 ];
+
+function TerminalPreview() {
+  return (
+    <Card className="overflow-hidden border-border/70 bg-card/80 text-left shadow-lift backdrop-blur">
+      {/* window chrome */}
+      <div className="flex items-center gap-2 border-b border-border/70 bg-secondary/50 px-4 py-3">
+        <span className="size-2.5 rounded-full bg-red-400/70" />
+        <span className="size-2.5 rounded-full bg-amber-400/70" />
+        <span className="size-2.5 rounded-full bg-emerald-400/70" />
+        <span className="ml-3 font-mono text-xs text-muted-foreground">
+          student-management — records
+        </span>
+      </div>
+      <div className="space-y-3 p-5 font-mono text-[13px] leading-relaxed">
+        <p>
+          <span className="text-primary">$</span>{" "}
+          <span className="text-foreground">sms search</span>{" "}
+          <span className="text-muted-foreground">--query</span>{" "}
+          <span className="text-violet-300">"okafor"</span>
+        </p>
+        <p className="text-muted-foreground">1 record found</p>
+        <div className="rounded-lg border border-border/60 bg-background/60 p-3">
+          <div className="flex items-center justify-between gap-3">
+            <span className="font-semibold text-foreground">Amara Okafor</span>
+            <span className="rounded-full border border-emerald-400/25 bg-emerald-400/10 px-2 py-0.5 text-[11px] text-emerald-300">
+              active
+            </span>
+          </div>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Computer Science · Year 2 · amara@school.edu
+          </p>
+          <p className="mt-2 text-xs">
+            <span className="text-primary">attendance</span>{" "}
+            <span className="text-foreground">98%</span>
+            <span className="mx-2 text-muted-foreground">·</span>
+            <span className="text-violet-300">gpa</span>{" "}
+            <span className="text-foreground">3.8</span>
+            <span className="mx-2 text-muted-foreground">·</span>
+            <span className="text-primary">fees</span>{" "}
+            <span className="text-foreground">settled</span>
+          </p>
+        </div>
+        <p>
+          <span className="text-primary">$</span>{" "}
+          <span className="text-foreground">sms record open</span>{" "}
+          <span className="text-violet-300">stu_9f2c</span>
+          <span className="ml-1 inline-block h-4 w-2 translate-y-0.5 animate-pulse bg-primary/70" />
+        </p>
+      </div>
+    </Card>
+  );
+}
 
 export default function Landing() {
   const { isAuthenticated, isLoading } = useAuth();
+  const signedIn = !isLoading && isAuthenticated;
 
   return (
     <motion.div
@@ -56,176 +138,157 @@ export default function Landing() {
       transition={{ duration: 0.5 }}
       className="relative min-h-screen overflow-hidden"
     >
-      {/* backdrop texture */}
+      {/* backdrop */}
       <div className="grid-pattern pointer-events-none absolute inset-0" aria-hidden />
       <div
-        className="pointer-events-none absolute -top-40 left-1/2 h-130 w-200 -translate-x-1/2 rounded-full bg-primary/10 blur-3xl"
+        className="pointer-events-none absolute -top-48 left-1/2 h-130 w-220 -translate-x-1/2 rounded-full bg-primary/15 blur-3xl"
+        aria-hidden
+      />
+      <div
+        className="pointer-events-none absolute right-0 top-1/3 h-96 w-96 rounded-full bg-violet-500/10 blur-3xl"
         aria-hidden
       />
 
       <div className="relative flex flex-col">
-        {/* Nav */}
+        {/* nav */}
         <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-6">
           <div className="flex items-center gap-2.5">
-            <div className="flex size-9 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-soft">
+            <div className="flex size-9 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-glow">
               <GraduationCap className="size-5" />
             </div>
-            <span className="text-lg font-semibold tracking-tight">Rostera</span>
+            <span className="font-display text-lg font-semibold tracking-tight">
+              Student Management System
+            </span>
           </div>
           <div className="flex items-center gap-2">
-            {!isLoading && isAuthenticated ? (
-              <Button asChild className="cursor-pointer gap-2 rounded-xl">
+            {signedIn ? (
+              <Button asChild className="gap-2 rounded-xl">
                 <Link to="/dashboard">
                   Open dashboard
                   <ArrowRight className="size-4" />
                 </Link>
               </Button>
             ) : (
-              <Button asChild className="cursor-pointer gap-2 rounded-xl">
-                <Link to="/auth">
-                  Admin sign in
-                  <ArrowRight className="size-4" />
-                </Link>
-              </Button>
+              <>
+                <Button asChild variant="ghost" className="rounded-xl">
+                  <Link to="/auth">Sign in</Link>
+                </Button>
+                <Button asChild className="gap-2 rounded-xl shadow-glow">
+                  <Link to="/auth?mode=signup">
+                    Create account
+                    <ArrowRight className="size-4" />
+                  </Link>
+                </Button>
+              </>
             )}
           </div>
         </header>
 
-        {/* Hero */}
         <main className="flex-1">
-          <section className="mx-auto w-full max-w-6xl px-6 pb-20 pt-16 text-center sm:pt-24">
-            <motion.div {...fadeIn(0)}>
-              <Badge
-                variant="secondary"
-                className="mb-6 gap-1.5 rounded-full px-3 py-1 text-xs font-medium"
-              >
-                <ShieldCheck className="size-3.5 text-primary" />
-                Version 1 — built for one admin
-              </Badge>
-            </motion.div>
-
-            <motion.h1
-              {...fadeIn(0.08)}
-              className="mx-auto max-w-3xl text-4xl font-bold tracking-tight text-balance sm:text-5xl md:text-6xl"
-            >
-              Student management,{" "}
-              <span className="text-primary">without the busywork</span>
-            </motion.h1>
-
-            <motion.p
-              {...fadeIn(0.16)}
-              className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg"
-            >
-              Rostera is a focused admin portal: register students, keep a clean
-              roster, and know your enrollment at a glance. Sign in and start
-              adding students in under a minute.
-            </motion.p>
-
-            <motion.div
-              {...fadeIn(0.24)}
-              className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row"
-            >
-              <Button
-                asChild
-                size="lg"
-                className="h-12 cursor-pointer gap-2 rounded-xl px-7 text-base shadow-soft transition-all hover:-translate-y-0.5 hover:shadow-lift"
-              >
-                <Link to="/auth?returnTo=%2Fdashboard">
-                  <Lock className="size-4" />
-                  Sign in as admin
-                </Link>
-              </Button>
-              <Button
-                asChild
-                size="lg"
-                variant="outline"
-                className="h-12 cursor-pointer gap-2 rounded-xl border-border/80 px-7 text-base"
-              >
-                <Link to="/dashboard">
-                  Go to dashboard
-                  <ArrowRight className="size-4" />
-                </Link>
-              </Button>
-            </motion.div>
-
-            {/* Product preview */}
-            <motion.div {...fadeIn(0.32)} className="mt-16">
-              <Card className="relative mx-auto max-w-4xl overflow-hidden border-border/70 text-left shadow-lift">
-                <div className="flex items-center gap-1.5 border-b border-border/70 bg-secondary/60 px-4 py-3">
-                  <span className="size-2.5 rounded-full bg-red-400/70" />
-                  <span className="size-2.5 rounded-full bg-amber-400/70" />
-                  <span className="size-2.5 rounded-full bg-emerald-400/70" />
-                  <span className="ml-3 text-xs font-medium text-muted-foreground">
-                    Rostera — Dashboard
-                  </span>
-                </div>
-                <div className="grid gap-3 p-5 sm:grid-cols-3">
-                  {[
-                    { label: "Total students", value: "248" },
-                    { label: "New this week", value: "12" },
-                    { label: "Active programs", value: "7" },
-                  ].map((stat) => (
-                    <div
-                      key={stat.label}
-                      className="rounded-xl border border-border/60 bg-background p-4"
-                    >
-                      <p className="text-xs font-medium text-muted-foreground">
-                        {stat.label}
-                      </p>
-                      <p className="mt-1 text-2xl font-bold tracking-tight">
-                        {stat.value}
-                      </p>
-                    </div>
-                  ))}
-                  <div className="rounded-xl border border-border/60 sm:col-span-3">
-                    <div className="divide-y divide-border/60">
-                      {["Amara Okafor", "Diego Ramírez", "Lena Fischer"].map(
-                        (name, i) => (
-                          <div
-                            key={name}
-                            className="flex items-center justify-between px-4 py-2.5"
-                          >
-                            <div className="flex items-center gap-3">
-                              <div className="flex size-7 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary">
-                                {name
-                                  .split(" ")
-                                  .map((p) => p[0])
-                                  .join("")}
-                              </div>
-                              <span className="text-sm font-medium">{name}</span>
-                            </div>
-                            <span className="text-xs text-muted-foreground">
-                              {["Computer Science · Y2", "Design · Y1", "Mathematics · Y3"][i]}
-                            </span>
-                          </div>
-                        ),
+          {/* hero */}
+          <section className="mx-auto w-full max-w-6xl px-6 pb-20 pt-14 sm:pt-20">
+            <div className="grid items-center gap-12 lg:grid-cols-[1.1fr_0.9fr]">
+              <div className="text-center lg:text-left">
+                <motion.p
+                  {...fadeIn(0)}
+                  className="mono-label text-primary"
+                >
+                  {/* eye-brow */}
+                  School operations platform
+                </motion.p>
+                <motion.h1
+                  {...fadeIn(0.08)}
+                  className="mt-4 font-display text-4xl font-bold leading-[1.05] tracking-tight text-balance sm:text-5xl lg:text-6xl"
+                >
+                  Every student record, one{" "}
+                  <span className="text-gradient">technical system</span>
+                </motion.h1>
+                <motion.p
+                  {...fadeIn(0.16)}
+                  className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg lg:mx-0"
+                >
+                  Built for schools and universities: manage student data across
+                  attendance, grades, fees, and timetables — and keep teachers,
+                  students, and parents connected in the same workspace.
+                </motion.p>
+                <motion.div
+                  {...fadeIn(0.24)}
+                  className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row lg:justify-start"
+                >
+                  <Button
+                    asChild
+                    size="lg"
+                    className="h-12 gap-2 rounded-xl px-7 text-base shadow-glow transition-transform hover:-translate-y-0.5"
+                  >
+                    <Link to="/auth?mode=signup">
+                      {signedIn ? "Open your dashboard" : "Create your account"}
+                      <ArrowRight className="size-4" />
+                    </Link>
+                  </Button>
+                  <Button
+                    asChild
+                    size="lg"
+                    variant="outline"
+                    className="h-12 gap-2 rounded-xl border-border/80 px-7 text-base"
+                  >
+                    <Link to={signedIn ? "/dashboard" : "/auth"}>
+                      {signedIn ? (
+                        "Go to dashboard"
+                      ) : (
+                        <>
+                          <Lock className="size-4" />
+                          Sign in
+                        </>
                       )}
-                    </div>
-                  </div>
-                </div>
-              </Card>
-            </motion.div>
+                    </Link>
+                  </Button>
+                </motion.div>
+                <motion.p
+                  {...fadeIn(0.3)}
+                  className="mt-5 font-mono text-xs text-muted-foreground"
+                >
+                  email + one-time code · role-based access · no setup required
+                </motion.p>
+              </div>
+
+              <motion.div {...fadeIn(0.32)}>
+                <TerminalPreview />
+              </motion.div>
+            </div>
           </section>
 
-          {/* Features */}
+          {/* modules */}
           <section className="mx-auto w-full max-w-6xl px-6 pb-20">
-            <div className="grid gap-5 md:grid-cols-3">
-              {features.map((f, i) => (
+            <div className="flex flex-col gap-2 pb-8 text-center sm:text-left">
+              <p className="mono-label text-muted-foreground">// modules</p>
+              <h2 className="font-display text-2xl font-bold tracking-tight sm:text-3xl">
+                What runs inside the system
+              </h2>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {modules.map((m, i) => (
                 <motion.div
-                  key={f.title}
+                  key={m.title}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: "-60px" }}
-                  transition={{ duration: 0.5, delay: i * 0.08 }}
+                  transition={{ duration: 0.45, delay: i * 0.06 }}
                 >
-                  <Card className="h-full border-border/70 shadow-soft transition-shadow hover:shadow-lift">
+                  <Card className="group h-full border-border/70 bg-card/70 shadow-soft transition-all hover:-translate-y-1 hover:shadow-glow">
                     <CardContent className="pt-6">
-                      <div className="mb-4 flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                        <f.icon className="size-5" />
+                      <div className="flex items-center justify-between">
+                        <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                          <m.icon className="size-5" />
+                        </div>
+                        <span className="font-mono text-xs text-muted-foreground/60">
+                          {String(i + 1).padStart(2, "0")}
+                        </span>
                       </div>
-                      <h3 className="font-semibold tracking-tight">{f.title}</h3>
+                      <h3 className="mt-4 font-display font-semibold tracking-tight">
+                        {m.title}
+                      </h3>
                       <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
-                        {f.body}
+                        {m.body}
                       </p>
                     </CardContent>
                   </Card>
@@ -234,41 +297,109 @@ export default function Landing() {
             </div>
           </section>
 
-          {/* Coming next */}
-          <section className="mx-auto w-full max-w-6xl px-6 pb-24">
-            <Card className="border-border/70 bg-secondary/50 shadow-none">
-              <CardContent className="flex flex-col items-center gap-6 py-10 text-center sm:flex-row sm:justify-between sm:text-left">
-                <div>
-                  <p className="text-sm font-semibold">Coming in a later version</p>
-                  <p className="mt-1 max-w-md text-sm text-muted-foreground">
-                    Version 1 keeps scope tight: add and list students. Grades
-                    and attendance arrive next.
-                  </p>
-                </div>
-                <div className="flex flex-wrap justify-center gap-2">
-                  {upcoming.map((u) => (
-                    <Badge
-                      key={u.label}
-                      variant="outline"
-                      className="gap-1.5 rounded-full bg-background px-3 py-1.5 text-xs font-medium"
-                    >
-                      <u.icon className="size-3.5 text-primary" />
-                      {u.label}
-                    </Badge>
+          {/* how it works */}
+          <section className="mx-auto w-full max-w-6xl px-6 pb-20">
+            <Card className="border-border/70 bg-secondary/40 shadow-none">
+              <CardContent className="py-8">
+                <p className="mono-label pb-6 text-muted-foreground">// getting started</p>
+                <div className="grid gap-8 sm:grid-cols-3">
+                  {steps.map((s) => (
+                    <div key={s.label}>
+                      <span className="font-mono text-sm text-primary">{s.label}</span>
+                      <h3 className="mt-2 font-display font-semibold tracking-tight">
+                        {s.title}
+                      </h3>
+                      <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                        {s.body}
+                      </p>
+                    </div>
                   ))}
                 </div>
               </CardContent>
             </Card>
+          </section>
+
+          {/* audience */}
+          <section className="mx-auto w-full max-w-6xl px-6 pb-20">
+            <div className="grid gap-4 md:grid-cols-2">
+              <Card className="border-border/70 bg-card/70 shadow-soft">
+                <CardContent className="pt-6">
+                  <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                    <Users className="size-5" />
+                  </div>
+                  <h3 className="mt-4 font-display font-semibold tracking-tight">
+                    Sold to institutions, not individuals
+                  </h3>
+                  <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+                    Schools and universities license the system as their records
+                    platform of record. Administrators own the registry; staff
+                    and families work from the same live data.
+                  </p>
+                </CardContent>
+              </Card>
+              <Card className="border-border/70 bg-card/70 shadow-soft">
+                <CardContent className="pt-6">
+                  <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                    <Terminal className="size-5" />
+                  </div>
+                  <h3 className="mt-4 font-display font-semibold tracking-tight">
+                    Designed like a developer tool
+                  </h3>
+                  <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+                    Instant search, keyboard-first navigation, monospaced data
+                    everywhere it matters. Built to feel like the systems your
+                    IT team already trusts.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+          </section>
+
+          {/* CTA band */}
+          <section className="mx-auto w-full max-w-6xl px-6 pb-24">
+            <motion.div {...fadeIn(0)}>
+              <div className="rounded-2xl bg-gradient-to-r from-primary/20 via-violet-500/20 to-primary/20 p-px">
+                <div className="flex flex-col items-center gap-6 rounded-2xl bg-card/90 px-8 py-12 text-center">
+                  <Badge
+                    variant="outline"
+                    className="rounded-full border-border/70 bg-background/60 font-mono text-xs text-muted-foreground"
+                  >
+                    version 1 · records + catalog live today
+                  </Badge>
+                  <h2 className="max-w-2xl font-display text-2xl font-bold tracking-tight text-balance sm:text-3xl">
+                    Sign up and put your student registry online today
+                  </h2>
+                  <p className="max-w-xl text-sm leading-relaxed text-muted-foreground">
+                    Version 1 ships the foundation: accounts, your own
+                    dashboard, and a searchable student catalog with full
+                    detail pages. Attendance, grades, fees, timetables, and
+                    messaging arrive as the platform grows.
+                  </p>
+                  <Button
+                    asChild
+                    size="lg"
+                    className="h-12 gap-2 rounded-xl px-8 text-base shadow-glow"
+                  >
+                    <Link to="/auth?mode=signup">
+                      {signedIn ? "Open dashboard" : "Create your account"}
+                      <ArrowRight className="size-4" />
+                    </Link>
+                  </Button>
+                </div>
+              </div>
+            </motion.div>
           </section>
         </main>
 
         <footer className="border-t border-border/70 py-8">
           <div className="mx-auto flex w-full max-w-6xl flex-col items-center justify-between gap-3 px-6 text-sm text-muted-foreground sm:flex-row">
             <div className="flex items-center gap-2">
-              <img src={logo} alt="Rostera logo" className="size-5 rounded" />
-              <span>Rostera — Student Management System</span>
+              <GraduationCap className="size-4 text-primary" />
+              <span>Student Management System</span>
             </div>
-            <span>Version 1 · Admin portal</span>
+            <span className="font-mono text-xs">
+              records · attendance · grades · fees · timetables · messaging
+            </span>
           </div>
         </footer>
       </div>
